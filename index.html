@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能视频分析工具 | 逐帧AI提示词生成</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-film"></i>
+                <div>
+                    <h1>智能视频分析工具</h1>
+                    <p class="subtitle">上传视频，逐帧分析并生成AI提示词</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" id="toggleConfigBtn">
+                    <i class="fas fa-cog"></i> API配置
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- 左侧面板 -->
+            <div class="left-panel">
+                <div class="panel config-panel" id="configPanel">
+                    <div class="panel-title">
+                        <i class="fas fa-sliders-h"></i>
+                        <h2>API配置</h2>
+                        <button class="btn-icon" id="closeConfigBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="api-config">
+                        <div class="form-group">
+                            <label for="apiEndpoint">API端点</label>
+                            <input type="text" id="apiEndpoint" placeholder="https://ark.cn-beijing.volces.com/api/v3" value="https://ark.cn-beijing.volces.com/api/v3">
+                        </div>
+                        
+                        <div class="config-row">
+                            <div class="form-group">
+                                <label for="apiKey">API密钥</label>
+                                <input type="text" id="apiKey" placeholder="输入你的API密钥">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="modelId">模型ID</label>
+                                <input type="text" id="modelId" placeholder="输入模型接入点ID">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="promptTemplate">提示词模板</label>
+                            <textarea id="promptTemplate" rows="3">请详细描述这张图像的内容，包括场景、主体、动作、风格、色彩、光照等要素。用简洁的语言生成一个可用于AI绘图的提示词。提示词少于800字</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="imageApiEndpoint">图片生成API端点</label>
+                            <input type="text" id="imageApiEndpoint" placeholder="https://ark.cn-beijing.volces.com/api/v3/images/generations" value="https://ark.cn-beijing.volces.com/api/v3/images/generations">
+                        </div>
+                        
+                        <div class="config-row">
+                            <div class="form-group">
+                                <label for="imageApiKey">图片生成API密钥</label>
+                                <input type="text" id="imageApiKey" placeholder="输入图片生成API密钥">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="imageModelId">图片生成模型ID</label>
+                                <input type="text" id="imageModelId" placeholder="输入图片生成模型ID">
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-success" id="saveConfigBtn">
+                            <i class="fas fa-save"></i> 保存配置
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="fas fa-upload"></i>
+                        <h2>上传文件</h2>
+                    </div>
+                    
+                    <!-- 文件类型选择 -->
+                    <div class="file-type-selector">
+                        <button class="file-type-btn active" data-type="video">
+                            <i class="fas fa-video"></i>
+                            视频文件
+                        </button>
+                        <button class="file-type-btn" data-type="image">
+                            <i class="fas fa-image"></i>
+                            图片文件
+                        </button>
+                    </div>
+                    
+                    <!-- 视频上传区域 -->
+                    <div class="file-upload video-upload active">
+                        <input type="file" id="videoUpload" accept="video/*">
+                        <div class="file-upload-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div>
+                                <h3>点击选择视频文件</h3>
+                                <p>支持MP4, MOV, AVI等格式</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 图片上传区域 -->
+                    <div class="file-upload image-upload">
+                        <input type="file" id="imageUpload" accept="image/*" multiple>
+                        <div class="file-upload-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div>
+                                <h3>点击选择图片文件</h3>
+                                <p>支持JPG, PNG, GIF等格式</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <video id="videoPreview" class="video-preview" controls></video>
+                    <div id="imagePreview" class="image-preview"></div>
+                    
+                    <div class="form-group video-controls">
+                        <label for="frameInterval">采样间隔 (秒)</label>
+                        <input type="number" id="frameInterval" min="1" max="10" value="3">
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="btn" id="analyzeBtn">
+                            <i class="fas fa-play-circle"></i> 开始分析
+                        </button>
+                        <button class="btn btn-outline" id="generateImagesBtn">
+                            <i class="fas fa-paint-brush"></i> 生成图片
+                        </button>
+                        <button class="btn btn-outline" id="clearBtn">
+                            <i class="fas fa-trash-alt"></i> 清除结果
+                        </button>
+                    </div>
+                    
+                    <div id="status" class="status"></div>
+                    
+                    <div class="progress-bar">
+                        <div id="progress" class="progress"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧面板 -->
+            <div class="right-panel">
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="fas fa-images"></i>
+                        <h2>分析结果</h2>
+                        <span id="frameCount" style="margin-left: auto; color: var(--gray); font-size: 0.9rem;">0 帧</span>
+                    </div>
+                    
+                    <div id="framesContainer" class="frames-container">
+                        <!-- 帧卡片将通过JS动态添加 -->
+                        <div class="empty-state" style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-image" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                            <h3>暂无分析结果</h3>
+                            <p>上传视频并开始分析后，结果将显示在这里</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

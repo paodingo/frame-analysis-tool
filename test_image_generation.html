@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片生成功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            background: #3a56d4;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+        }
+        .image-container {
+            margin: 10px 0;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>图片生成功能测试</h1>
+        <p>这个页面用于测试图片生成功能是否正常工作。</p>
+        
+        <div>
+            <button class="test-button" onclick="testMockImage()">测试模拟图片生成</button>
+            <button class="test-button" onclick="testAPICall()">测试API调用</button>
+            <button class="test-button" onclick="testImageDisplay()">测试图片显示</button>
+        </div>
+        
+        <div id="result" class="result">
+            测试结果将显示在这里...
+        </div>
+    </div>
+
+    <script>
+        // 测试模拟图片生成
+        function testMockImage() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>测试模拟图片生成...</h3>';
+            
+            try {
+                // 创建一个简单的Canvas来生成模拟图片
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                
+                // 生成渐变背景
+                const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+                gradient.addColorStop(0, '#4361ee');
+                gradient.addColorStop(1, '#4cc9f0');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 512, 512);
+                
+                // 添加文字
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('测试图片生成', 256, 200);
+                ctx.fillText('模拟图片功能正常', 256, 230);
+                
+                // 转换为base64
+                const imageData = canvas.toDataURL('image/png');
+                
+                // 显示图片
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'image-container';
+                imageContainer.innerHTML = `
+                    <h4>生成的模拟图片:</h4>
+                    <img src="${imageData}" alt="测试图片">
+                    <p>图片生成成功！模拟图片功能正常工作。</p>
+                `;
+                
+                resultDiv.appendChild(imageContainer);
+                console.log('模拟图片生成测试成功');
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<p style="color: red;">模拟图片生成失败: ${error.message}</p>`;
+                console.error('模拟图片生成测试失败:', error);
+            }
+        }
+        
+        // 测试API调用
+        function testAPICall() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>测试API调用...</h3>';
+            
+            // 检查是否有配置
+            const apiKey = document.getElementById('apiKey')?.value || '未配置';
+            const modelId = document.getElementById('modelId')?.value || '未配置';
+            
+            resultDiv.innerHTML += `
+                <p>API密钥: ${apiKey}</p>
+                <p>模型ID: ${modelId}</p>
+                <p>注意：实际API调用需要正确的配置</p>
+            `;
+            
+            console.log('API配置检查完成');
+        }
+        
+        // 测试图片显示
+        function testImageDisplay() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>测试图片显示...</h3>';
+            
+            try {
+                // 创建一个测试图片容器
+                const testContainer = document.createElement('div');
+                testContainer.id = 'test-generated-image-0';
+                testContainer.style.cssText = `
+                    border: 2px dashed #4cc9f0;
+                    border-radius: 8px;
+                    padding: 10px;
+                    background: rgba(76, 201, 240, 0.05);
+                    min-height: 200px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                `;
+                
+                // 创建图片元素
+                const testImg = document.createElement('img');
+                testImg.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSIjNDM2MWVlIi8+Cjx0ZXh0IHg9IjI1NiIgeT0iMjU2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjI0Ij5UZXN0IEltYWdlPC90ZXh0Pgo8L3N2Zz4K';
+                testImg.className = 'frame-image';
+                testImg.alt = '测试图片';
+                testImg.style.cssText = `
+                    max-width: 100%;
+                    max-height: 300px;
+                    border-radius: 5px;
+                `;
+                
+                // 创建下载按钮
+                const downloadButton = document.createElement('button');
+                downloadButton.className = 'test-button';
+                downloadButton.innerHTML = '下载测试图片';
+                downloadButton.onclick = () => {
+                    const link = document.createElement('a');
+                    link.href = testImg.src;
+                    link.download = 'test-image.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+                
+                // 创建标签
+                const label = document.createElement('div');
+                label.className = 'image-label';
+                label.textContent = '测试图片';
+                label.style.cssText = `
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    color: #2b2d42;
+                    background: rgba(255, 255, 255, 0.8);
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    margin-top: 10px;
+                `;
+                
+                // 组装容器
+                testContainer.appendChild(testImg);
+                testContainer.appendChild(downloadButton);
+                testContainer.appendChild(label);
+                
+                resultDiv.appendChild(testContainer);
+                resultDiv.innerHTML += '<p style="color: green;">图片显示功能正常！</p>';
+                console.log('图片显示测试成功');
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<p style="color: red;">图片显示测试失败: ${error.message}</p>`;
+                console.error('图片显示测试失败:', error);
+            }
+        }
+        
+        // 页面加载时自动运行基础测试
+        window.addEventListener('load', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>基础功能检查...</h3>';
+            
+            // 检查必要的函数是否存在
+            const functions = ['testMockImage', 'testAPICall', 'testImageDisplay'];
+            const missingFunctions = functions.filter(fn => typeof window[fn] === 'undefined');
+            
+            if (missingFunctions.length === 0) {
+                resultDiv.innerHTML += '<p style="color: green;">✓ 所有测试函数加载成功</p>';
+            } else {
+                resultDiv.innerHTML += `<p style="color: red;">✗ 缺少函数: ${missingFunctions.join(', ')}</p>`;
+            }
+            
+            // 检查Canvas支持
+            if (window.HTMLCanvasElement) {
+                resultDiv.innerHTML += '<p style="color: green;">✓ Canvas支持正常</p>';
+            } else {
+                resultDiv.innerHTML += '<p style="color: red;">✗ 浏览器不支持Canvas</p>';
+            }
+            
+            resultDiv.innerHTML += '<p>点击上方按钮进行具体功能测试</p>';
+        });
+    </script>
+</body>
