@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const path = require('path');
 
 const app = express();
 const PORT = 3001;
@@ -8,6 +9,9 @@ const PORT = 3001;
 // 启用CORS
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+
+// 提供静态文件服务
+app.use(express.static(path.join(__dirname)));
 
 // 图片生成代理端点
 app.post('/api/images/generations', async (req, res) => {
@@ -98,6 +102,7 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
     console.log(`代理服务器运行在 http://localhost:${PORT}`);
     console.log('可用端点:');
+    console.log('  GET / - 静态文件服务');
     console.log('  POST /api/images/generations - 图片生成');
     console.log('  POST /api/chat/completions - 对话API');
     console.log('  GET /health - 健康检查');})
